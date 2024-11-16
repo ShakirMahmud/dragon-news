@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const NewsCard = (props = {}) => {
     const { news } = props || {};
@@ -47,7 +48,8 @@ const NewsCard = (props = {}) => {
 
                 {/* Details */}
                 <p className="text-gray-700 mt-2 line-clamp-3">
-                    {news.details}
+                    {news.details.slice(0, 150)}...{''}
+                    <Link to={`/news/${news._id}`} className='text-primary'>ReadMore</Link>
                 </p>
 
                 {/* Footer */}
