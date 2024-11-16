@@ -1,11 +1,11 @@
 import React, { useContext, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../provider/AuthProvider';
 
 const Register = () => {
     const [error, setError] = useState({});
-    const { createNewUser, setUser } = useContext(AuthContext);
-
+    const { createNewUser, setUser, updateUserProfile } = useContext(AuthContext);
+    const navigate = useNavigate();
     const handleSubmit = e => {
         e.preventDefault();
         const form = new FormData(e.target);
@@ -13,23 +13,29 @@ const Register = () => {
         const photo_url = form.get('photo_url');
         const email = form.get('email');
         const password = form.get('password');
-        if(password.length < 6){
-            setError({...error, password: 'Password must be at least 6 characters long' });
+        if (password.length < 6) {
+            setError({ ...error, password: 'Password must be at least 6 characters long' });
             return;
         }
         console.log(name, photo_url, email, password);
 
         createNewUser(email, password)
-        .then(result =>{
-            const user = result.user;
-            setUser(user);
-            console.log('User registered successfully!', user);
-        })
-        .catch(err =>{
-            const errCode = err.code;
-            const errMsg = err.message;
-            console.error(errCode, errMsg);
-        })
+            .then(result => {
+                const user = result.user;
+                setUser(user);
+                updateUserProfile({ displayName: name, photoURL: photo_url })
+                    .then(() => {
+                        navigate('/');
+                    })
+                    .catch(err => {
+                        console.error('Error updating profile', err);
+                    })
+            })
+            .catch(err => {
+                const errCode = err.code;
+                const errMsg = err.message;
+                console.error(errCode, errMsg);
+            })
     }
 
     return (
