@@ -1,9 +1,9 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../provider/AuthProvider';
 
 const Register = () => {
-
+    const [error, setError] = useState({});
     const { createNewUser, setUser } = useContext(AuthContext);
 
     const handleSubmit = e => {
@@ -13,6 +13,10 @@ const Register = () => {
         const photo_url = form.get('photo_url');
         const email = form.get('email');
         const password = form.get('password');
+        if(password.length < 6){
+            setError({...error, password: 'Password must be at least 6 characters long' });
+            return;
+        }
         console.log(name, photo_url, email, password);
 
         createNewUser(email, password)
@@ -56,6 +60,9 @@ const Register = () => {
                             <span className="label-text">Password</span>
                         </label>
                         <input type="password" placeholder="password" name='password' className="input input-bordered" required />
+                        {
+                            error.password && <p className="mt-2 text-red-500">{error.password}</p>
+                        }
                         <label className="label">
                             <a href="#" className="label-text-alt link link-hover">Forgot password?</a>
                         </label>
